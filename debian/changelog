@@ -1,3 +1,9 @@
+mtp (0.0.5+ubports) xenial; urgency=medium
+
+  * Imported to UBports
+
+ -- UBports auto importer <infra@ubports.com>  Fri, 18 May 2018 02:09:13 +0200
+
 mtp (0.0.4+16.04.20160413-0ubuntu1) xenial; urgency=medium
 
   * Update to latest AOSP code (Marshallow) Make MTP work for file > 4GB
