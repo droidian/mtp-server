@@ -58,7 +58,7 @@ dbus::Bus::Ptr the_session_bus()
     return session_bus;
 }
 
-struct UnityGreeter
+struct LomiriGreeter
 {
     struct Properties
     {
@@ -68,7 +68,7 @@ struct UnityGreeter
             {
                 return "IsActive";
             };
-            typedef UnityGreeter Interface;
+            typedef LomiriGreeter Interface;
             typedef bool ValueType;
             static const bool readable = true;
             static const bool writable = false;
@@ -84,13 +84,13 @@ namespace dbus
 namespace traits
 {
 template<>
-struct Service<core::UnityGreeter>
+struct Service<core::LomiriGreeter>
 {
     inline static const std::string& interface_name()
     {
         static const std::string s
         {
-            "com.canonical.UnityGreeter"
+            "com.lomiri.LomiriGreeter"
         };
         return s;
     }
@@ -124,7 +124,7 @@ private:
     MtpDatabase* mtp_database;
 
     // Security
-    std::shared_ptr<core::dbus::Property<core::UnityGreeter::Properties::IsActive> > is_active;
+    std::shared_ptr<core::dbus::Property<core::LomiriGreeter::Properties::IsActive> > is_active;
     bool screen_locked = true;
 
     // inotify stuff
@@ -290,10 +290,11 @@ public:
         bus = core::the_session_bus();
         bus->install_executor(core::dbus::asio::make_executor(bus));
         dbus_thread = boost::thread(&MtpDaemon::drive_bus, this);
-        auto greeter_service = dbus::Service::use_service(bus, "com.canonical.UnityGreeter");
-        dbus::Object::Ptr greeter = greeter_service->object_for_path(dbus::types::ObjectPath("/"));
+        auto greeter_service = dbus::Service::use_service(bus, "com.lomiri.LomiriGreeter");
+        dbus::Object::Ptr greeter = greeter_service->object_for_path(
+            dbus::types::ObjectPath("/com/lomiri/LomiriGreeter"));
 
-        is_active = greeter->get_property<core::UnityGreeter::Properties::IsActive>();
+        is_active = greeter->get_property<core::LomiriGreeter::Properties::IsActive>();
     }
 
     void initStorage()
