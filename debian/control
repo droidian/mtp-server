@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Thomas Voß <thomas.voss@canonical.com>
-Build-Depends: debhelper (>= 9), 
+Build-Depends: debhelper-compat (= 12),
                dh-translations,
                cmake, 
                pkg-config,
