@@ -15,7 +15,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "UbuntuMtpDatabase.h"
+#include "LomiriMtpDatabase.h"
 
 #include <MtpServer.h>
 #include <MtpStorage.h>
@@ -274,7 +274,7 @@ public:
 
 
         // MTP database.
-        mtp_database = new UbuntuMtpDatabase();
+        mtp_database = new LomiriMtpDatabase();
 
 
         // MTP server
