@@ -1,2 +1,4 @@
 usr/bin/mtp-server
 usr/share/locale
+
+debian/mtp-server-usb-moded-watcher /usr/libexec/

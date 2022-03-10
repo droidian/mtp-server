@@ -10,3 +10,6 @@ export DPKG_GENSYMBOLS_CHECK_LEVEL = 4
 
 override_dh_missing:
 	dh_missing --fail-missing
+
+execute_after_dh_installsystemduser:
+	dh_installsystemduser -p mtp-server --name=mtp-server-usb-moded-watcher

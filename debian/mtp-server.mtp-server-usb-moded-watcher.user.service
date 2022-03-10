@@ -1,0 +1,21 @@
+[Unit]
+Description=MTP protocol server - usb-moded watcher
+
+After=lomiri-full-greeter.service
+After=lomiri-full-shell.service
+After=lomiri-greeter.service
+After=lomiri-shell.service
+
+Before=ubuntu-touch-session.target
+PartOf=ubuntu-touch-session.target
+
+StartLimitIntervalSec=30
+StartLimitBurst=60
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/libexec/mtp-server-usb-moded-watcher
+
+[Install]
+WantedBy=ubuntu-touch-session.target
