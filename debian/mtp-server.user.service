@@ -1,0 +1,15 @@
+[Unit]
+Description=MTP protocol server
+
+After=lomiri-full-greeter.service
+After=lomiri-full-shell.service
+After=lomiri-greeter.service
+After=lomiri-shell.service
+
+StartLimitIntervalSec=30
+StartLimitBurst=60
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/bin/mtp-server

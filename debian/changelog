@@ -1,3 +1,16 @@
+mtp (0.1.0) UNRELEASED; urgency=medium
+
+  * server: migrate to LomiriGreeter interface
+  * server: rename {Ubuntu,Lomiri}MtpDatabase
+  * debian/*: migrate to systemd
+  * debian/*: have a usb-moded watcher starts the server when needed
+  * debian/control: bump debhelper-compat to 12
+  * debian/control: update metadata
+  * Remove obsolete .bzr-builddeb
+  * Add .gitignore
+
+ -- Ratchanan Srirattanamet <ratchanan@ubports.com>  Tue, 01 Mar 2022 17:54:57 +0700
+
 mtp (0.0.5+ubports) xenial; urgency=medium
 
   * Imported to UBports

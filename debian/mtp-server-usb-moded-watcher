@@ -1,0 +1,75 @@
+#!/usr/bin/python3
+
+# Copyright (C) 2022 UBports Foundation.
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# This Python script exists because there's no convienient way for usb-moded, a
+# system service, to tell a user's systemd to start something. So, the control
+# is inverted: this script sits in user systemd & listen for a signal that emits
+# from usb-moded, and then start or stop the service as needed.
+
+from gi.repository import GLib, Gio
+
+usb_moded = Gio.DBusProxy.new_for_bus_sync(
+    Gio.BusType.SYSTEM,
+    Gio.DBusProxyFlags.DO_NOT_LOAD_PROPERTIES,
+    None, # DBusInterfaceInfo
+    "com.meego.usb_moded",
+    "/com/meego/usb_moded",
+    "com.meego.usb_moded",
+    None, # Cancellable
+)
+
+systemd_user = Gio.DBusProxy.new_for_bus_sync(
+    Gio.BusType.SESSION,
+    Gio.DBusProxyFlags.DO_NOT_LOAD_PROPERTIES | Gio.DBusProxyFlags.DO_NOT_CONNECT_SIGNALS,
+    None, # DBusInterfaceInfo
+    "org.freedesktop.systemd1",
+    "/org/freedesktop/systemd1",
+    "org.freedesktop.systemd1.Manager",
+    None, # Cancellable
+)
+
+def handle_current_mode(mode: str):
+    if mode == "busy":
+        # This mode is transient, and a signal should be sent when the final
+        # mode is reached.
+        return
+
+    if mode in ("mtp", "mtp_adb"): # FIXME: better way for this list?
+        method = "StartUnit"
+    else:
+        method = "StopUnit"
+
+    print(f"Current mode is {mode}, so we {method} mtp-server.service.")
+
+    systemd_user.call_sync(
+        method,
+        GLib.Variant("(ss)", ("mtp-server.service", "replace")), # name, mode
+        Gio.DBusCallFlags.NONE,
+        250, # timeout_msec
+        None,
+    )
+
+def handle_usb_moded_signal(
+    obj, sender_name: str, signal_name: str, parameters: GLib.Variant
+):
+    if signal_name != "sig_usb_current_state_ind":
+        return
+
+    mode = parameters.get_child_value(0).get_string()
+    handle_current_mode(mode)
+
+usb_moded.connect("g-signal", handle_usb_moded_signal)
+
+current_mode = usb_moded.call_sync(
+    "mode_request",
+    None,
+    Gio.DBusCallFlags.NONE,
+    250,
+    None,
+).get_child_value(0).get_string()
+handle_current_mode(current_mode)
+
+loop = GLib.MainLoop(None)
+loop.run()

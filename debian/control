@@ -1,9 +1,9 @@
 Source: mtp
 Section: utils
 Priority: optional
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Maintainer: UBports Developers <developers@ubports.com>
 XSBC-Original-Maintainer: Thomas Voß <thomas.voss@canonical.com>
-Build-Depends: debhelper (>= 9), 
+Build-Depends: debhelper-compat (= 12),
                dh-translations,
                cmake, 
                pkg-config,
@@ -17,12 +17,9 @@ Build-Depends: debhelper (>= 9),
                libproperties-cpp-dev,
                libdbus-cpp-dev,
 Standards-Version: 3.9.4
-Homepage: http://launchpad.net/mtp
-# If you aren't ~phablet-team but need to upload packaging changes,
-# just go ahead.  ~phablet-team will notice and sync up the code again.
-Vcs-Bzr: https://code.launchpad.net/~phablet-team/mtp/trunk
-Vcs-Browser: https://bazaar.launchpad.net/~phablet-team/mtp/trunk/files
-X-Ubuntu-Use-Langpack: yes
+Homepage: https://gitlab.com/ubports/core/mtp
+Vcs-Git: https://gitlab.com/ubports/core/mtp.git
+Vcs-Browser: https://gitlab.com/ubports/core/mtp
 
 Package: libmtpserver1
 Section: libs
@@ -48,6 +45,11 @@ Package: mtp-server
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
+# For usb-moded-watcher script
+         python3,
+         python3-gi,
+         gir1.2-glib-2.0,
+         gir1.2-gio-2.0,
 Description: Small server implementation of MTP.
  Exposes phone storage over MTP. 	  
  .
