@@ -1,0 +1,1 @@
+SUBSYSTEM=="misc", KERNEL=="mtp_usb", ACTION=="add", RUN+="/usr/bin/chown droidian:droidian /dev/mtp_usb" 
