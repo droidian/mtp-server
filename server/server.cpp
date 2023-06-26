@@ -15,7 +15,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "LomiriMtpDatabase.h"
+#include "DroidianMtpDatabase.h"
 
 #include <MtpServer.h>
 #include <MtpStorage.h>
@@ -123,10 +123,6 @@ private:
     MtpStorage* sd_card;
     MtpDatabase* mtp_database;
 
-    // Security
-    std::shared_ptr<core::dbus::Property<core::LomiriGreeter::Properties::IsActive> > is_active;
-    bool screen_locked = true;
-
     // inotify stuff
     boost::thread notifier_thread;
     boost::thread io_service_thread;
@@ -160,18 +156,15 @@ private:
 
         storageID++;
 
-        if (!screen_locked) {
-            mtp_database->addStoragePath(path,
-                                         std::string(),
-                                         removable->getStorageID(),
-                                         true);
-            server->addStorage(removable);
-        }
+        mtp_database->addStoragePath(path,
+                                     std::string(),
+                                     removable->getStorageID(),
+                                     true);
+        server->addStorage(removable);
 
         removables.insert(std::pair<std::string, std::tuple<MtpStorage*, bool> >
                               (name,
-                               std::make_tuple(removable,
-                                               screen_locked ? false : true)));
+                               std::make_tuple(removable, false)));
     }
 
     void add_mountpoint_watch(const std::string& path)
@@ -272,10 +265,8 @@ public:
         notifier_thread = boost::thread(&MtpDaemon::read_more_notify, this);
         io_service_thread = boost::thread(boost::bind(&asio::io_service::run, &io_svc));
 
-
-        // MTP database.
-        mtp_database = new LomiriMtpDatabase();
-
+        // MTP database
+        mtp_database = new DroidianMtpDatabase();
 
         // MTP server
         server = new MtpServer(
@@ -285,16 +276,6 @@ public:
                 userdata->pw_gid,
                 FileSystemConfig::file_perm,
                 FileSystemConfig::directory_perm);
-
-        // security / screen locking
-        bus = core::the_session_bus();
-        bus->install_executor(core::dbus::asio::make_executor(bus));
-        dbus_thread = boost::thread(&MtpDaemon::drive_bus, this);
-        auto greeter_service = dbus::Service::use_service(bus, "com.lomiri.LomiriGreeter");
-        dbus::Object::Ptr greeter = greeter_service->object_for_path(
-            dbus::types::ObjectPath("/com/lomiri/LomiriGreeter"));
-
-        is_active = greeter->get_property<core::LomiriGreeter::Properties::IsActive>();
     }
 
     void initStorage()
@@ -302,7 +283,7 @@ public:
         char product_name[PROP_VALUE_MAX];
 
         // Local storage
-        property_get ("ro.product.model", product_name, "Ubuntu Touch device");
+        property_get ("ro.product.model", product_name, "Droidian device");
 
         home_storage = new MtpStorage(
             MTP_STORAGE_FIXED_RAM,
@@ -361,34 +342,8 @@ public:
 
     void run()
     {
-        if (is_active->get()) {
-            is_active->changed().connect([this](bool active)
-            {
-                if (!active) {
-                    screen_locked = active;
-                    VLOG(2) << "device was unlocked, adding storage";
-                    if (home_storage && !home_storage_added) {
-                        server->addStorage(home_storage);
-                        home_storage_added = true;
-                    }
-                    BOOST_FOREACH(std::string name, removables | boost::adaptors::map_keys) {
-                        auto t = removables.at(name);
-                        MtpStorage *storage = std::get<0>(t);
-                        bool added = std::get<1>(t);
-                        if (!added) {
-                            mtp_database->addStoragePath(storage->getPath(),
-                                                         std::string(),
-                                                         storage->getStorageID(),
-                                                         true);
-                            server->addStorage(storage);
-                        }
-                    }
-                }
-            });
-        } else {
-            screen_locked = false;
-            VLOG(2) << "device is not locked, adding storage";
-            if (home_storage) {
+            VLOG(2) << "device was unlocked, adding storage";
+            if (home_storage && !home_storage_added) {
                 server->addStorage(home_storage);
                 home_storage_added = true;
             }
@@ -398,14 +353,12 @@ public:
                 bool added = std::get<1>(t);
                 if (!added) {
                     mtp_database->addStoragePath(storage->getPath(),
-                                                 std::string(),
-                                                 storage->getStorageID(),
-                                                 true);
-                    server->addStorage(storage);
-                }
-            }
-        }
-
+                                                     std::string(),
+                                                     storage->getStorageID(),
+                                                     true);
+                        server->addStorage(storage);
+             }
+        };
         // start the MtpServer main loop
         server->run();
     }
@@ -414,10 +367,6 @@ public:
 int main(int argc, char** argv)
 {
     google::InitGoogleLogging(argv[0]);
-
-    bindtextdomain("mtp-server", "/usr/share/locale");
-    setlocale(LC_ALL, "");
-    textdomain("mtp-server");
 
     LOG(INFO) << "MTP server starting...";
 

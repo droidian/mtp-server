@@ -56,7 +56,7 @@ set(
     src/MtpStorageInfo.cpp
     src/MtpStringBuffer.cpp
     src/MtpUtils.cpp)
-    
+
 include_directories(
     include/
     libusbhost/include
@@ -100,5 +100,3 @@ enable_testing()
 
 add_subdirectory(libusbhost)
 add_subdirectory(server)
-add_subdirectory(tests)
-add_subdirectory(po)

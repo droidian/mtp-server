@@ -56,7 +56,7 @@ using namespace boost::filesystem;
 
 namespace android
 {
-class LomiriMtpDatabase : public android::MtpDatabase {
+class DroidianMtpDatabase : public android::MtpDatabase {
 private:
     struct DbEntry
     {
@@ -236,7 +236,7 @@ private:
     void read_more_notify()
     {
         stream_desc.async_read_some(buf.prepare(buf.max_size()),
-                                    boost::bind(&LomiriMtpDatabase::inotify_handler,
+                                    boost::bind(&DroidianMtpDatabase::inotify_handler,
                                                 this,
                                                 asio::placeholders::error,
                                                 asio::placeholders::bytes_transferred));
@@ -334,7 +334,7 @@ private:
     }
 
 public:
-    LomiriMtpDatabase():
+    DroidianMtpDatabase():
         counter(1),
         stream_desc(io_svc),
         work(io_svc),
@@ -351,13 +351,13 @@ public:
 
 	db = std::map<MtpObjectHandle, DbEntry>();
 
-        notifier_thread = boost::thread(&LomiriMtpDatabase::read_more_notify,
+        notifier_thread = boost::thread(&DroidianMtpDatabase::read_more_notify,
                                        this);
 
         io_service_thread = boost::thread(boost::bind(&asio::io_service::run, &io_svc));
     }
 
-    virtual ~LomiriMtpDatabase() {
+    virtual ~DroidianMtpDatabase() {
         io_svc.stop();
         notifier_thread.detach();
         io_service_thread.join();

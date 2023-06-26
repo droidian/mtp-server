@@ -1,11 +1,6 @@
 [Unit]
 Description=MTP protocol server
-
-After=lomiri-full-greeter.service
-After=lomiri-full-shell.service
-After=lomiri-greeter.service
-After=lomiri-shell.service
-
+After=sm.puri.Phosh.service
 StartLimitIntervalSec=30
 StartLimitBurst=60
 
