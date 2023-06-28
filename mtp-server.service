@@ -1,10 +1,11 @@
 [Unit]
 Description=MTP protocol server
 After=sm.puri.Phosh.service
-StartLimitIntervalSec=30
-StartLimitBurst=60
+StartLimitBurst=5000
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
 Restart=always
+RestartSec=5s
 ExecStart=/usr/bin/mtp-server
