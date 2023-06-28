@@ -3,6 +3,7 @@ Description=MTP protocol server
 After=sm.puri.Phosh.service
 StartLimitBurst=5000
 StartLimitIntervalSec=0
+ConditionPathExists=!/home/droidian/.mtp_disable
 
 [Service]
 Type=simple
