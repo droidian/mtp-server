@@ -1,4 +1,5 @@
 usr/bin/mtp-server
 rules/90-mtp.rules /etc/udev/rules.d/
 mtp-server.service /usr/lib/systemd/user/
-
+mtp-configfs/mtp-configfs /usr/sbin/
+mtp-configfs/mtp-configfs.conf /etc/

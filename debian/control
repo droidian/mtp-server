@@ -42,7 +42,6 @@ Description: Library for implementing MTP protocol servers - development files
 
 Package: mtp-server
 Architecture: any
-Conflicts: hybris-usb
 Depends: ${misc:Depends},
          ${shlibs:Depends},
 Description: Small server implementation of MTP.
