@@ -184,6 +184,22 @@ while true; do
             echo "Configured for $USBMODE"
         fi
 
+        target_error=$(readlink /tmp/mtp-server.ERROR)
+        target_info=$(readlink /tmp/mtp-server.INFO)
+        target_warning=$(readlink /tmp/mtp-server.WARNING)
+
+        for file in /tmp/mtp-server.*; do
+            if [ -L "$file" ]; then
+                continue
+            fi
+
+            if [ "$file" = "/tmp/$target_error" ] || [ "$file" = "/tmp/$target_info" ] || [ "$file" = "/tmp/$target_warning" ]; then
+                continue
+            fi
+
+            rm -f "$file"
+        done
+
         OLD_USBMODE=$USBMODE
     fi
 
