@@ -12,4 +12,4 @@ override_dh_missing:
 	dh_missing --fail-missing
 
 override_dh_installsystemd:
-	dh_installsystemd -pmtp-server --name=mtp-configfs mtp-configfs.service --no-start
+	dh_installsystemd -pmtp-server --name=mtp-configfs mtp-configfs.service
