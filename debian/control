@@ -12,9 +12,7 @@ Build-Depends: debhelper-compat (>= 13),
                libboost-test-dev,
                libandroid-properties-dev,
                libgoogle-glog-dev,
-               libdbus-1-dev,
                libproperties-cpp-dev,
-               libdbus-cpp-dev,
 Standards-Version: 4.5.0
 Homepage: http://launchpad.net/mtp
 Vcs-Bzr: https://github.com/droidian/mtp-server

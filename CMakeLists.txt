@@ -14,7 +14,6 @@ set(MTP_VERSION_MINOR 0)
 set(MTP_VERSION_PATCH 0)
 
 find_package(Boost REQUIRED COMPONENTS thread system filesystem unit_test_framework)
-pkg_check_modules(DBUSCPP REQUIRED dbus-cpp)
 pkg_check_modules(GLOG REQUIRED libglog)
 
 set(
@@ -56,7 +55,7 @@ set(
     src/MtpStorageInfo.cpp
     src/MtpStringBuffer.cpp
     src/MtpUtils.cpp)
-    
+
 include_directories(
     include/
     libusbhost/include
@@ -100,5 +99,3 @@ enable_testing()
 
 add_subdirectory(libusbhost)
 add_subdirectory(server)
-add_subdirectory(tests)
-add_subdirectory(po)
