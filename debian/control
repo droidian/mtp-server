@@ -1,10 +1,9 @@
 Source: mtp
 Section: utils
 Priority: optional
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Maintainer: Bardia Moshiri <fakeshell@bardia.tech>
 XSBC-Original-Maintainer: Thomas Voß <thomas.voss@canonical.com>
-Build-Depends: debhelper (>= 9), 
-               dh-translations,
+Build-Depends: debhelper-compat (>= 13),
                cmake, 
                pkg-config,
                libboost-dev,
@@ -16,13 +15,10 @@ Build-Depends: debhelper (>= 9),
                libdbus-1-dev,
                libproperties-cpp-dev,
                libdbus-cpp-dev,
-Standards-Version: 3.9.4
+Standards-Version: 4.5.0
 Homepage: http://launchpad.net/mtp
-# If you aren't ~phablet-team but need to upload packaging changes,
-# just go ahead.  ~phablet-team will notice and sync up the code again.
-Vcs-Bzr: https://code.launchpad.net/~phablet-team/mtp/trunk
-Vcs-Browser: https://bazaar.launchpad.net/~phablet-team/mtp/trunk/files
-X-Ubuntu-Use-Langpack: yes
+Vcs-Bzr: https://github.com/droidian/mtp-server
+Vcs-Browser: https://github.com/droidian/mtp-server
 
 Package: libmtpserver1
 Section: libs
@@ -40,7 +36,7 @@ Architecture: any
 Depends: libmtpserver1 (= ${binary:Version}),
          ${misc:Depends},
 Description: Library for implementing MTP protocol servers - development files
- Exposes phone storage over MTP. 	  
+ Exposes phone storage over MTP.
  .
  Contains header files required to develop actual services.
 
@@ -49,7 +45,6 @@ Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
 Description: Small server implementation of MTP.
- Exposes phone storage over MTP. 	  
+ Exposes phone storage over MTP.
  .
  Contains a simple MTP server that exposes images, videos, and music.
-

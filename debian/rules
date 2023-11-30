@@ -6,12 +6,10 @@
 export DPKG_GENSYMBOLS_CHECK_LEVEL = 4
 
 %:
-	dh $@ --with translations -- --fail-missing
+	dh $@
 
-override_dh_installinit:
-	dh_installinit -pmtp-server --name=mtp-state --no-start -r -n
-	dh_installinit
+override_dh_missing:
+	dh_missing --fail-missing
 
-override_dh_install:
-	cp debian/mtp-server.mtp-state.upstart debian/mtp-state.conf
-	dh_install
+override_dh_installsystemd:
+	dh_installsystemd -pmtp-server --name=mtp-configfs mtp-configfs.service
