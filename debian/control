@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: Bardia Moshiri <fakeshell@bardia.tech>
 XSBC-Original-Maintainer: Thomas Voß <thomas.voss@canonical.com>
-Build-Depends: debhelper-compat (>= 13),
+Build-Depends: debhelper,
                cmake, 
                pkg-config,
                libboost-dev,
