@@ -1,11 +1,11 @@
 # MTP-Server - Small Server Implementation of Media Transfer Protocol
-MTP allows media files to be transferred automatically to and from portable devices. Droidian includes `mtp-server` for Managing MTP. Some of the features are: 
+MTP allows media files to be transferred automatically to and from portable devices. Droidian includes `mtp-server` for Managing MTP. Some of the features are:
 
-* Fast and Easy-to-use File Transformation  
+* Fast and Easy-to-use File Transformation
 * No risk of file system corruption
 * Mislocation
 
-## Dependencies 
+## Dependencies
 `mtp-server` requires the following development libraries:
 - libboost-dev
 - libboost-thread-dev
@@ -15,13 +15,13 @@ MTP allows media files to be transferred automatically to and from portable devi
 - libgoogle-glog-dev
 - libproperties-cpp-dev
 
-## Manual Installation 
+## Manual Installation
 the `mtp-server` is implemented into the Droidian by default, but you can simply update or reinstall it by running 
 ```
-$ sudo apt-get install mtp-server 
+$ sudo apt-get install mtp-server
 ```
 
-## Building 
+## Building
 ```
 $ git clone https://github.com/droidian/mtp-server.git
 $ cd mtp-server
@@ -31,7 +31,7 @@ $ dpkg-deb build mtp-server
 ```
 
 
-The `mtp-server.service` should be enabled for starting itself during every boot: 
+The `mtp-server.service` can be started like the following:
 ```
-$ sudo systemctl enable --now mtp-server
+$ systemctl start --user mtp-server
 ```
