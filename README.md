@@ -1,5 +1,5 @@
 # MTP-Server - Small Server Implementation of Media Transfer Protocol
-MTP allows media files to be transferred automatically to and from portable devices. Droidian includes `mtp-server` for Managig MTP. Some of the features are: 
+MTP allows media files to be transferred automatically to and from portable devices. Droidian includes `mtp-server` for Managing MTP. Some of the features are: 
 
 * Fast and Easy-to-use File Transformation  
 * No risk of file system corruption
