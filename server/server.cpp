@@ -20,7 +20,9 @@
 #include <MtpServer.h>
 #include <MtpStorage.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 #include <stdint.h>
 
 #include <signal.h>
@@ -289,10 +291,10 @@ int main(int argc, char** argv)
     LOG(INFO) << "MTP server starting...";
 
     int fd = open("/dev/mtp_usb", O_RDWR);
-    if (fd < 0)
-    {
-        LOG(ERROR) << "Error opening /dev/mtp_usb, aborting now...";
-        return 1;
+    while (fd < 0) {
+        LOG(INFO) << "Couldn't open /dev/mtp_usb, waiting for device...";
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+        fd = open("/dev/mtp_usb", O_RDWR);
     }
 
     try {
