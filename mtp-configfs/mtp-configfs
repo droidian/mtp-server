@@ -63,6 +63,10 @@ done < $CONFIG_FILE
 # First argument overrides the USBMODE
 [ -z "${1}" ] || USBMODE="${1}"
 
+# kill DHCP server if running
+pid=$(cat /run/hybris-usb/dhcpd4.pid 2>/dev/null)
+kill $pid 2>/dev/null
+
 if [ "$USBMODE" = "mtp" ]; then
     if [ "$METHOD" = "configfs" ]; then
         if [ ! -e "$GADGETDIR/functions/$MTPCONFIG" ]; then
@@ -204,14 +208,22 @@ elif [ "$USBMODE" = "rndis" ]; then
 
     setprop sys.usb.state $USBMODE
 
-    pkill dhcpd
-    ifconfig rndis0 10.15.19.82 netmask 255.255.255.0
+    if grep usb0 /proc/net/dev >/dev/null
+    then
+       RNDIS_DEVICE=usb0
+    else
+       RNDIS_DEVICE=rndis0
+    fi
+
+    ifconfig $RNDIS_DEVICE 10.15.19.82 netmask 255.255.255.0
 
     mkdir -p /run/hybris-usb
     touch /run/hybris-usb/dhcpd4.lease
-    dhcpd -f -4 -q -cf /etc/hybris-usb/dhcpd.conf -pf /run/hybris-usb/dhcpd4.pid -lf /run/hybris-usb/dhcpd4.lease &
 
     echo "Configured for $USBMODE"
+
+    dhcpd -f -4 -q -cf /etc/hybris-usb/dhcpd.conf -pf /run/hybris-usb/dhcpd4.pid -lf /run/hybris-usb/dhcpd4.lease $RNDIS_DEVICE
+
 elif [ "$USBMODE" = "none" ]; then
     if [ "$METHOD" = "configfs" ]; then
         rm -f $GADGETDIR/configs/$CONFIGNAME/$MTPCONFIG
