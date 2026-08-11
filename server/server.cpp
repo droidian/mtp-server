@@ -20,6 +20,7 @@
 #include <MtpServer.h>
 #include <MtpStorage.h>
 
+#include <array>
 #include <chrono>
 #include <iostream>
 #include <thread>
@@ -66,10 +67,10 @@ private:
     boost::thread notifier_thread;
     boost::thread io_service_thread;
 
-    asio::io_service io_svc;
-    asio::io_service::work work;
+    asio::io_context io_svc;
+    asio::executor_work_guard<asio::io_context::executor_type> work;
     asio::posix::stream_descriptor stream_desc;
-    asio::streambuf buf;
+    std::array<char, 1024> buf;
 
     int inotify_fd;
 
@@ -118,7 +119,7 @@ private:
     {
         VLOG(1) << __PRETTY_FUNCTION__;
 
-        stream_desc.async_read_some(buf.prepare(buf.max_size()),
+        stream_desc.async_read_some(asio::buffer(buf),
                                     boost::bind(&MtpDaemon::inotify_handler,
                                                 this,
                                                 asio::placeholders::error,
@@ -132,7 +133,7 @@ private:
 
         while(transferred - processed >= sizeof(inotify_event))
         {
-            const char* cdata = processed + asio::buffer_cast<const char*>(buf.data());
+            const char* cdata = processed + buf.data();
             const inotify_event* ievent = reinterpret_cast<const inotify_event*>(cdata);
             path storage_path ("/media");
 
@@ -177,9 +178,8 @@ private:
 public:
 
     MtpDaemon(int fd):
-        stream_desc(io_svc),
-        work(io_svc),
-        buf(1024)
+        work(asio::make_work_guard(io_svc)),
+        stream_desc(io_svc)
     {
         userdata = getpwuid (getuid());
 
@@ -191,7 +191,7 @@ public:
 
         stream_desc.assign(inotify_fd);
         notifier_thread = boost::thread(&MtpDaemon::read_more_notify, this);
-        io_service_thread = boost::thread(boost::bind(&asio::io_service::run, &io_svc));
+        io_service_thread = boost::thread([this]() { io_svc.run(); });
 
 
         // MTP database.
@@ -236,7 +236,7 @@ public:
             copy(directory_iterator(p), directory_iterator(), std::back_inserter(v));
             for (std::vector<path>::const_iterator it(v.begin()), it_end(v.end()); it != it_end; ++it)
             {
-                add_removable_storage(it->string().c_str(), it->leaf().c_str());
+                add_removable_storage(it->string().c_str(), it->filename().c_str());
             }
 
             // make sure we can catch any new removable storage that gets added.

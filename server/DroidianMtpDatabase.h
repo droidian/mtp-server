@@ -26,6 +26,7 @@
 #include <MtpProperty.h>
 #include <MtpDebug.h>
 
+#include <array>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -88,10 +89,10 @@ private:
     boost::thread notifier_thread;
     boost::thread io_service_thread;
 
-    asio::io_service io_svc;
-    asio::io_service::work work;
+    asio::io_context io_svc;
+    asio::executor_work_guard<asio::io_context::executor_type> work;
     asio::posix::stream_descriptor stream_desc;
-    asio::streambuf buf;
+    std::array<char, 1024> buf;
     int inotify_fd;
 
     MtpObjectFormat guess_object_format(std::string extension)
@@ -235,7 +236,7 @@ private:
 
     void read_more_notify()
     {
-        stream_desc.async_read_some(buf.prepare(buf.max_size()),
+        stream_desc.async_read_some(asio::buffer(buf),
                                     boost::bind(&DroidianMtpDatabase::inotify_handler,
                                                 this,
                                                 asio::placeholders::error,
@@ -249,7 +250,7 @@ private:
 
         while(transferred - processed >= sizeof(inotify_event))
         {
-            const char* cdata = processed + asio::buffer_cast<const char*>(buf.data());
+            const char* cdata = processed + buf.data();
             const inotify_event* ievent = reinterpret_cast<const inotify_event*>(cdata);
             MtpObjectHandle parent;
             path p;
@@ -336,9 +337,8 @@ private:
 public:
     DroidianMtpDatabase():
         counter(1),
-        stream_desc(io_svc),
-        work(io_svc),
-        buf(1024)
+        work(asio::make_work_guard(io_svc)),
+        stream_desc(io_svc)
     {
         local_server = nullptr;
 
@@ -354,7 +354,7 @@ public:
         notifier_thread = boost::thread(&DroidianMtpDatabase::read_more_notify,
                                        this);
 
-        io_service_thread = boost::thread(boost::bind(&asio::io_service::run, &io_svc));
+        io_service_thread = boost::thread([this]() { io_svc.run(); });
     }
 
     virtual ~DroidianMtpDatabase() {
@@ -683,7 +683,7 @@ public:
                     newname = strdup(buffer);
 
                     oldpath /= entry.path;
-                    newpath /= oldpath.branch_path() / "/" / newname;
+                    newpath = oldpath.parent_path() / newname;
 
                     boost::filesystem::rename(oldpath, newpath);
 

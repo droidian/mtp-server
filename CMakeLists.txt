@@ -1,6 +1,6 @@
-project(mtpserver)
+cmake_minimum_required(VERSION 3.10)
 
-cmake_minimum_required(VERSION 2.8)
+project(mtpserver)
 
 include(FindPkgConfig)
 include(GNUInstallDirs)
@@ -13,7 +13,7 @@ set(MTP_VERSION_MAJOR 1)
 set(MTP_VERSION_MINOR 0)
 set(MTP_VERSION_PATCH 0)
 
-find_package(Boost REQUIRED COMPONENTS thread system filesystem unit_test_framework)
+find_package(Boost REQUIRED COMPONENTS thread filesystem unit_test_framework)
 pkg_check_modules(GLOG REQUIRED libglog)
 
 set(
